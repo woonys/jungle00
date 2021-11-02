@@ -6,6 +6,7 @@ import werkzeug
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = b'_5#aby2L"F4Q8z\n\xec]'
 
+
 # mongodb://test:test@
 client = MongoClient('localhost', 27017)
 db = client.dbjungle
