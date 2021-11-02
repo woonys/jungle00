@@ -56,6 +56,8 @@ def login():
             return render_template('/', message=message)
     return render_template('/', message=message)
 
+
+
 ####################
 #여기서부터 재운
 #2. main page
@@ -86,7 +88,7 @@ def list_my_cards():
     all_mywrts = list(db.member_writing.find({'phone': session['phone'], 'week': week_receive}))
     for wrt in all_mywrts:
         wrt['id'] = str(wrt.pop('_id'))
-    return jsonify({'result': 'success', 'all_writing': all_mywrts})
+    return jsonify({'result': 'success', 'all_writing': all_mywrt})
 
 @app.route('/memos', methods=['GET'])
 def list_others_cards():
@@ -104,7 +106,6 @@ def update_card():
     title_receive = request.form['title_give']
     content_receive = request.form['contents_give']
     week_receive = request.form['week_give']
-
     db.exam.update_one({'_id': id_receive}, {'$set': {'title': title_receive, 'content': content_receive, 'week': week_receive}})
     return jsonify({'result': 'success', 'msg': '수정 완료'})
 
