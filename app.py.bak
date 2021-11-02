@@ -21,10 +21,6 @@ def hello_flask():
 def login():
     return render_template('login.html')
 
-@app.route('/logout')
-def logout():
-    return session.clear()
-
 
 @app.route('/login_confirm', methods=['POST'])
 def login_confirm():
@@ -32,7 +28,7 @@ def login_confirm():
     pwd = request.form['pw_']
     info_check = db.member_list.find_one({'id': id, 'pwd': pwd})
     if info_check is not None:
-        print(info_check)
+        print("회원체크 완료")
         session['id'] = id
         return redirect(url_for('index'))
     else:
