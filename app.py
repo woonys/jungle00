@@ -1,8 +1,6 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from pymongo import MongoClient
-from bson.json_util import dumps
 from bson import ObjectId
-import werkzeug
 import bcrypt
 
 client = MongoClient('localhost', 27017)
@@ -12,10 +10,41 @@ app = Flask(__name__)
 app.secret_key = 'any random string'
 
 
+@app.route("/sign_up", methods=['post', 'get'])
+def sign_up():
+message = ''
+if "id_receive" in session:
+    return redirect(url_for("logged_in"))
+if request.method == "POST":
+    user_id = request.form.get("id")
+    phone = request.form.get("phone")
+
+    password1 = request.form.get("pwd1")
+    password2 = request.form.get("pwd2")
+
+    user_found = db.jungledb.find_one({"phone": phone})
+    user_name = user_found['name']
+    user_phone = user_found['phone']
+    if phone_found is False:
+        message = '정글 학생이 아닙니다!'
+        return render_template('index.html', message=message)
+    if password1 != password2:
+        message = '패스워드가 같지 않습니다!'
+        return render_template('index.html', message=message)
+    else:
+        hashed = bcrypt.hashpw(password1.encode('utf-8'), bcrypt.gensalt())
+        user_input = {'user_id': user_id, 'password': hashed, 'user_phone': user_phone, 'user_name': user_name}
+        db.member_list.insert_one(user_input)
+
+        user_data = db.member_list.find_one({"phone": phone})
+
+        return render_template('logged_in.html', user_data=user_data)
+return render_template('index.html')
+
 @app.route('/logged_in')
 def logged_in():
-    if "id_receive" in session:
-        id = session["id_receive"]
+    if "user_id" in session:
+        id = session["user_id"]
         return render_template('logged_in.html', id=id)
     else:
         return redirect(url_for("login"))
