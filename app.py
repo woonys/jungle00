@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from pymongo import MongoClient
+from bson.json_util import dumps
 from bson import ObjectId
 import bcrypt
 
@@ -8,7 +9,6 @@ db = client.dbjungle
 
 app = Flask(__name__)
 app.secret_key = 'any random string'
-
 
 @app.route("/sign_up", methods=['post', 'get'])
 def sign_up():
@@ -49,31 +49,30 @@ def logged_in():
     else:
         return redirect(url_for("login"))
 
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods = ['GET', 'POST'])
 def login():
     message = 'Please login to your account'
     if 'user_id' in session:
         return redirect(url_for("logged_in"))
-
+    
     if request.method == 'GET':
         return render_template("login.html")
 
     if request.method == 'POST':
-        # 클라이언트로부터 데이터를 받기
+        #클라이언트로부터 데이터를 받기
         id_receive = request.form['id_give']
         pwd_receive = request.form['pwd_give']
-        # print("id, pwd 받음", id_receive, pwd_receive)
-
-        # member_list DB에서 사용자 조회 (db_mem_id, db_mem_pwd 열에서 회원 조회)
-        info_check = db.member_list.find_one({'user_id': id_receive})
+        #print("id, pwd 받음", id_receive, pwd_receive)
+        
+        #member_list DB에서 사용자 조회 (db_mem_id, db_mem_pwd 열에서 회원 조회)
+        info_check = db.member_list.find_one({ 'user_id' : id_receive})
         if info_check is not None:
             print("회원체크 완료")
-            id_val = info_check['user_id']  # DB ID 값
-            passwordcheck = info_check['pwd']  # DB PWD 값
+            id_val = info_check['user_id'] #DB ID 값
+            passwordcheck = info_check['pwd'] #DB PWD 값
 
-            if bcrypt.checkpw(pwd_receive.encode('utf-8'), passwordcheck):  # DB PWD/입력값 비교
-                session['user_id'] = id_val  # 이름과 user_id로 세션
+            if bcrypt.checkpw(pwd_receive.encode('utf-8'), passwordcheck): #DB PWD/입력값 비교
+                session['user_id'] = id_val #이름과 user_id로 세션
                 return redirect(url_for('logged_in'))
 
             else:
@@ -140,8 +139,7 @@ def update_card():
     title_receive = request.form['title_give']
     content_receive = request.form['contents_give']
     week_receive = request.form['week_give']
-    db.exam.update_one({'_id': id_receive},
-                       {'$set': {'title': title_receive, 'content': content_receive, 'week': week_receive}})
+    db.exam.update_one({'_id': id_receive}, {'$set': {'title': title_receive, 'content': content_receive, 'week': week_receive}})
     return jsonify({'result': 'success', 'msg': '수정 완료'})
 
 
