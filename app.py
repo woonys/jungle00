@@ -2,7 +2,6 @@ from flask import Flask, render_template, jsonify, request, session, redirect, u
 from pymongo import MongoClient
 from bson.json_util import dumps
 from bson import ObjectId
-import werkzeug
 import bcrypt
 
 client = MongoClient('localhost', 27017)
@@ -11,11 +10,42 @@ db = client.dbjungle
 app = Flask(__name__)
 app.secret_key = 'any random string'
 
+@app.route("/sign_up", methods=['post', 'get'])
+def sign_up():
+message = ''
+if "id_receive" in session:
+    return redirect(url_for("logged_in"))
+if request.method == "POST":
+    user_id = request.form.get("id")
+    phone = request.form.get("phone")
+
+    password1 = request.form.get("pwd1")
+    password2 = request.form.get("pwd2")
+
+    user_found = db.jungledb.find_one({"phone": phone})
+    user_name = user_found['name']
+    user_phone = user_found['phone']
+    if phone_found is False:
+        message = '정글 학생이 아닙니다!'
+        return render_template('index.html', message=message)
+    if password1 != password2:
+        message = '패스워드가 같지 않습니다!'
+        return render_template('index.html', message=message)
+    else:
+        hashed = bcrypt.hashpw(password1.encode('utf-8'), bcrypt.gensalt())
+        user_input = {'user_id': user_id, 'password': hashed, 'user_phone': user_phone, 'user_name': user_name}
+        db.member_list.insert_one(user_input)
+
+        user_data = db.member_list.find_one({"phone": phone})
+
+        return render_template('logged_in.html', user_data=user_data)
+return render_template('index.html')
+
 @app.route('/logged_in')
 def logged_in():
-    if "id_receive" in session:
-        id = session["id_receive" ]
-        return render_template('logged_in.html', id = id)
+    if "user_id" in session:
+        id = session["user_id"]
+        return render_template('logged_in.html', id=id)
     else:
         return redirect(url_for("login"))
 
@@ -57,15 +87,16 @@ def login():
     return render_template('/', message=message)
 
 
-
 ####################
-#여기서부터 재운
-#2. main page
+# 여기서부터 재운
+# 2. main page
 
 @app.route('/main')
 def main():
     return render_template('main.html')
-#세션에서 이름, 전화번호(식별자)를 넘겨받기
+
+
+# 세션에서 이름, 전화번호(식별자)를 넘겨받기
 
 
 @app.route('/memos', methods=['POST'])
@@ -76,11 +107,12 @@ def create_card():
     title_receive = request.form['title_give']
     content_receive = request.form['content_give']
 
-    doc = {'name':name, 'phone': phone, 'title': title_receive, 'content': content_receive, 'week': week_receive}
+    doc = {'name': name, 'phone': phone, 'title': title_receive, 'content': content_receive, 'week': week_receive}
 
     db.member_writing.insert_one(doc)
 
     return jsonify({'result': 'success', 'msg': '오늘 하루도 수고많으셨어요!'})
+
 
 @app.route('/memos', methods=['GET'])
 def list_my_cards():
@@ -89,6 +121,7 @@ def list_my_cards():
     for wrt in all_mywrts:
         wrt['id'] = str(wrt.pop('_id'))
     return jsonify({'result': 'success', 'all_writing': all_mywrt})
+
 
 @app.route('/memos', methods=['GET'])
 def list_others_cards():
@@ -102,18 +135,20 @@ def list_others_cards():
 
 @app.route('/memos', methods=['PATCH'])  # vs PUT
 def update_card():
-    id_receive = ObjectId(request.form['id_give']) #string
+    id_receive = ObjectId(request.form['id_give'])  # string
     title_receive = request.form['title_give']
     content_receive = request.form['contents_give']
     week_receive = request.form['week_give']
     db.exam.update_one({'_id': id_receive}, {'$set': {'title': title_receive, 'content': content_receive, 'week': week_receive}})
     return jsonify({'result': 'success', 'msg': '수정 완료'})
 
+
 @app.route('/memos/{id:str}', methods=['DELETE'])
 def delete_card():
     id_receive = ObjectId(request.form['id_give'])
     db.member_writing.delete_one({'_id': id_receive})
     return jsonify({'result': 'success', 'msg': '제거되었습니다!'})
+
 
 if __name__ == '__main__':
     app.run()
