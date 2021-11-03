@@ -55,6 +55,18 @@
                 
             }
         }
+        function log_out() {
+            $.ajax
+            ({
+                type: "GET",
+                url: "/logout",
+                data:{},
+                success: function (response)
+                {window.location.reload();
+                }
+            })
+
+        }
     </script>
     </head>
     <body>
@@ -68,20 +80,21 @@
                   주차를 선택하세요
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item" href="#">1 주차</a>
-                  <a class="dropdown-item" href="#">2 주차</a>
-                  <a class="dropdown-item" href="#">3 주차</a>
-                  <a class="dropdown-item" href="#">4 주차</a>
-                  <a class="dropdown-item" href="#">5 주차</a>
-                  <a class="dropdown-item" href="#">6 주차</a>
-                  <a class="dropdown-item" href="#">7 주차</a>
-                  <a class="dropdown-item" href="#">8 주차</a>
-                  <a class="dropdown-item" href="#">9 주차</a>
-                  <a class="dropdown-item" href="#">10 주차</a>
-                  <a class="dropdown-item" href="#">11 주차</a>
-                  <a class="dropdown-item" href="#">12 주차</a>
-                  <a class="dropdown-item" href="#">13 주차</a>
-                  <a class="dropdown-item" href="#">14 주차</a>
+                     {%  for i in range(13) %}
+                      <a class="dropdown-item" href="#" id="week{{i}}">1 주차</a>
+                      <a class="dropdown-item" href="#">2 주차</a>
+                      <a class="dropdown-item" href="#">3 주차</a>
+                      <a class="dropdown-item" href="#">4 주차</a>
+                      <a class="dropdown-item" href="#">5 주차</a>
+                      <a class="dropdown-item" href="#">6 주차</a>
+                      <a class="dropdown-item" href="#">7 주차</a>
+                      <a class="dropdown-item" href="#">8 주차</a>
+                      <a class="dropdown-item" href="#">9 주차</a>
+                      <a class="dropdown-item" href="#">10 주차</a>
+                      <a class="dropdown-item" href="#">11 주차</a>
+                      <a class="dropdown-item" href="#">12 주차</a>
+                      <a class="dropdown-item" href="#">13 주차</a>
+                      <a class="dropdown-item" href="#">14 주차</a>
                 </div>
             </div>
             
@@ -99,6 +112,7 @@
         <div>
             <button type="button" class="btn btn-outline-danger">내글보기</button>
             <button type="button" class="btn btn-outline-info">Info</button>
+            <button type="button" class="btn btn-outline-info" onclick="log_out()">logout</button>
         </div>
            
         
