@@ -16,7 +16,7 @@ def logged_in():
         userid = session["user_id"]
         username = session["user_name"]
         print(id, username)
-        return render_template('main.html.bak', userid=userid, username=username)
+        return render_template('main.html', userid=userid, username=username)
     else:
         return redirect(url_for("login"))
 
@@ -150,7 +150,7 @@ def main():
 
 # 세션에서 이름, 전화번호(식별자)를 넘겨받기
 #저장 완료!
-@app.route('/memos', methods=['POST'])
+@app.route('/save_memos', methods=['POST'])
 def create_card():
     user_id = session['user_id']
     user_name = session['user_name']
@@ -166,16 +166,16 @@ def create_card():
 
 
 #클라이언트 사이드
-@app.route('/memos', methods=['GET'])
+@app.route('/my_memos', methods=['GET'])
 def list_my_cards():
-    week_receive = request.form['week_give']
+    week_receive = request.args.get('week_give')
     all_mywrts = list(db.member_writing.find({'user_id': session['user_id'], 'week': week_receive}))
     for wrt in all_mywrts:
         wrt['id'] = str(wrt.pop('_id'))
     return jsonify({'result': 'success', 'all_writing': all_mywrts})
 
 
-@app.route('/memos', methods=['GET'])
+@app.route('/other_memos', methods=['GET'])
 def list_others_cards():
     week_receive = request.form['week_give']
     all_othwrt = list(db.member_writing.find({'week': week_receive}))
@@ -186,7 +186,7 @@ def list_others_cards():
 
 
 
-@app.route('/memos', methods=['PATCH'])  # vs PUT
+@app.route('/update_memos', methods=['PATCH'])  # vs PUT
 def update_card():
     id_receive = ObjectId(request.form['id_give'])  # string
     title_receive = request.form['title_give']
@@ -199,7 +199,7 @@ def update_card():
 
 
 
-@app.route('/memos/{id:str}', methods=['DELETE'])
+@app.route('/delete_memos/{id:str}', methods=['DELETE'])
 def delete_card():
     id_receive = ObjectId(request.form['id_give'])
     db.member_writing.delete_one({'_id': id_receive})

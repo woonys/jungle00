@@ -41,20 +41,19 @@
 
     </style>
     <script>
-        $(document).ready(function () {
-            $.ajax
-            ({
-                type: "GET",
-                url: "/memos",//잘 모르겠음
-                data: {},
-                success: function (response) {
-                    if (response['result'] == 'success') //성공했으면 이름 주세요
-                    {
-                        // 받은 이름을 어떻게 주냐;;;
-                    }
-                }
-            })
-        });
+        {#$(document).ready(function () {#}
+        {#    $.ajax#}
+        {#    ({#}
+        {#        type: "GET",#}
+        {#        url: "/memos",//잘 모르겠음#}
+        {#        data: {},#}
+        {#        success: function (response) {#}
+        {#            if (response['result'] == 'success') //성공했으면 이름 주세요#}
+        {#            {#}
+        {#                // 받은 이름을 어떻게 주냐;;;#}
+        {#            }#}
+        {#        }#}
+        {#    })#}
 
         function log_out() {
             $.ajax
@@ -81,11 +80,12 @@
                 $.ajax
                 ({
                     type: "POST",
-                    url: "/memos",
+                    url: "/save_memos",
                     data: {week_give: week, title_give: title, content_give: content},
                     success: function (response) {
                         if (response["result"] == "success") {
                             alert("저장 성공");
+                            window.location.reload();
                         } else {
                             alert("저장 실패");
                         }
@@ -112,13 +112,21 @@
                     url: `/my_memos?week_give=${week}`,//url 정보
                     data: {},//이름정보
                     success: function(response)
-                    {
+                    {   console.log("get 성공!")
                         if (response["result"] == "success")
                         {
-                            for (let i = 0; i < name.length ;i++)
+                            var all_writing = response["all_writing"];
+
+
+                            console.log(all_writing);
+                            console.log(title);
+                            console.log(content);
+                            for (let i = 0; i < all_writing.length ;i++)
                             {
+                                var title = all_writing[i]['title'];
+                                var content = all_writing[i]['content'];
                                 let temp_html = `<div class="card-body">
-                                            <h5 class="card-title">${name}님이 ${content}를 공부했어요</h5>
+                                            <h5 class="card-title">{{ username }}님이 ${title}를 공부했어요</h5>
                                             <p class="card-text">${content}</p>
                                             </div>`;
                                 $("#card_add").append(temp_html)
@@ -145,7 +153,7 @@
     </script>
     </head>
     <div class="jumbotron">
-        <h1 class="display-4">{{ name }}님! 오늘은 무엇을 공부하셨나요?</h1>
+        <h1 class="display-4">{{ username }}님! 오늘은 무엇을 공부하셨나요?</h1>
     </div>
     <div class="size align">
         <!-- <button type="button" class="btn btn-outline-danger" onclick="all()">전체 보기</button> -->
