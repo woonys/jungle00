@@ -28,8 +28,10 @@
             text-align: right;
         }
 
-        #wrap {
-            margin: 30px;
+        #card_add {
+            display: none;
+        }
+        #week_info {
             display: none;
         }
 
@@ -66,131 +68,155 @@
             })
         };
 
-            function save() {
-                let week = $("select[name=location]").val();
-                let title = $('#title').val();
-                let content = $('#content').val();
-                console.log(week)
-                console.log(title)
-                console.log(content)
-                if (title == "" || title == "제목을 입력해주세요" || content == "" || content == "내용을 입력해주세요" || week == "null") {
-                    alert("주차 선택 및 제목이나 컨텐츠가 비어 있습니다.")
-                } else {
-                    $.ajax
-                    ({
-                        type: "POST",
-                        url: "/memos",
-                        data: {week_give: week, title_give: title, content_give: content},
-                        success: function (response) {
-                            if (response["result"] == "success") {
-                                alert("저장 성공");
-                                //!!!!!내글 보기 페이지로 가던지 해야할듯!!!!!
-                            } else {
-                                alert("저장 실패");
-                            }
-
+        function save() {
+            let week = $("select[name=location]").val();
+            let title = $('#title').val();
+            let content = $('#content').val();
+            console.log(title)
+            console.log(week)
+            console.log(content)
+            if (title == "" || title == "제목을 입력해주세요" || content == "" || content == "내용을 입력해주세요" || week == "null") {
+                alert("주차 선택 및 제목이나 컨텐츠가 비어 있습니다.")
+            } else {
+                $.ajax
+                ({
+                    type: "POST",
+                    url: "/memos",
+                    data: {week_give: week, title_give: title, content_give: content},
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            alert("저장 성공");
+                        } else {
+                            alert("저장 실패");
                         }
-                    })
 
-                }
+                    }
+                })
+
             }
+        }
+
 
             // function all()
             // {   //왜 기능 안하지
             //     $("#button_action").hide();
-            //     $("#wrap").show();
+            //     $("#card_add").show();
             // }
             function my_list() {
                 $('#button_action').hide();
-                $("#wrap").show();
-                $.ajax
-                    ({
-                        type: "GET",
-                        url: "/my_memos",
-                        data: {week_give: week},
-                        success: function (response) {
-                            if (response["result"] == "success") {
-                                alert("저장 성공");
-                            } else {
-                                alert("저장 실패");
-                            }
 
+                $("#card_add").show();
+                $("#week_info").show();
+                let week = $("select[name=location]").val();
+                $.ajax({
+                    type : "GET",
+                    url: `/my_memos?week_give=${week}`,//url 정보
+                    data: {},//이름정보
+                    success: function(response)
+                    {
+                        if (response["result"] == "success")
+                        {
+                            for (let i = 0; i < name.length ;i++)
+                            {
+                                let temp_html = `<div class="card-body">
+                                            <h5 class="card-title">${name}님이 ${content}를 공부했어요</h5>
+                                            <p class="card-text">${content}</p>
+                                            </div>`;
+                                $("#card_add").append(temp_html)
+
+                            }
                         }
-                    })
+                    }
+                })
             }
 
             function another() {
                 $('#button_action').hide();
-                $("#wrap").show();
+                $("#card_add").show();
             }
 
             function new_memo() {
                 $('#button_action').show();
-                $("#wrap").hide();
+                $("#card_add").hide();
             }
 
-            function all_text() {
-
-            }
+            // function all_text() {
+            // }
 
     </script>
-</head>
-<div class="jumbotron">
-    <h1 class="display-4">{{ name }}님! 오늘은 무엇을 공부하셨나요?</h1>
-</div>
-<div class="size align">
-    <!-- <button type="button" class="btn btn-outline-danger" onclick="all()">전체 보기</button> -->
-    <button type="button" class="btn btn-outline-danger" onclick="my_list()">내 글 보기</button>
-    <button type="button" class="btn btn-outline-danger" onclick="new_memo()">새 글 쓰기</button>
-    <button type="button" class="btn btn-outline-info" onclick="another()">다른 사람 글</button>
-    <button type="button" class="btn btn-outline-info" id="log_out_button_align" onclick="log_out()">로그아웃</button>
-</div>
-<div class="size" id="button_action">
-    <div><span>주차를 선택하세요 </span>
-        <select name="location">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-            <option value="13">13</option>
-            <option value="14">14</option>
-        </select>
+    </head>
+    <div class="jumbotron">
+        <h1 class="display-4">{{ name }}님! 오늘은 무엇을 공부하셨나요?</h1>
     </div>
-    <div id="output">
+    <div class="size align">
+        <!-- <button type="button" class="btn btn-outline-danger" onclick="all()">전체 보기</button> -->
+        <button type="button" class="btn btn-outline-danger" onclick="my_list()">내 글 보기</button>
+        <button type="button" class="btn btn-outline-danger" onclick="new_memo()">새 글 쓰기</button>
+        <button type="button" class="btn btn-outline-info" onclick="another()">다른 사람 글</button>
+        <button type="button" class="btn btn-outline-info" id="log_out_button_align" onclick="log_out()">로그아웃</button>
     </div>
-
-    <div class="form-group">
-        <span>제목 </span><input placeholder="제목을 입력해주세요" id="title">
-    </div>
-    <div class="form-group">
-        <div>내용</div>
-        <textarea cols="100" rows="20" placeholder="내용을 입력해주세요" id="content"></textarea>
-    </div>
-    <div class="form-group-submit">
-        <button type="button" class="btn btn-primary" onclick="save()">저장하기</button>
-    </div>
-</div>
-
-
-<!-- mylist 버튼을 누르면 서버로 부터 요청받은 정보를 받아 붙여줄 템플릿 -->
-<div class="row row-cols-1 row-cols-md-2" id="wrap">
-    <div class="col mb-4">
-        <div class="card">
-            <div class="card-body">
-                
-                <h5 class="card-title">{{ name }}님은 {{ title }}에 대해 공부했어요</h5>
-                <p class="card-text">{{ content }}</p>
-            </div>
+    <div class="size" id="button_action">
+        <div><span>주차를 선택하세요 </span>
+            <select name="location">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+            </select>
         </div>
-    </div>
-</div>
-</body>
+        <div id="output">
+        </div>
+
+
+        <div class="form-group">
+            <span>제목 </span><input placeholder="제목을 입력해주세요" id="title">
+        </div>
+        <div class="form-group">
+            <div>내용</div>
+            <textarea cols="100" rows="20" placeholder="내용을 입력해주세요" id="content"></textarea>
+        </div>
+        <div class="form-group-submit">
+            <button type="button" class="btn btn-primary" onclick="save()">저장하기</button>
+        </div>
+        </div>
+        <div class="size" id="week_info"><span>주차를 선택하세요 </span>
+            <select name="location">
+                <option value="0">전체</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+            </select>
+        </div>
+        <div id="output2">
+        </div>
+
+        <div class="size" id="card_add">
+            표시할 글이 없습니다.
+                <!— <div class="card-body">
+                <h5 class="card-title">${name}님이 ${content}를 공부했어요</h5>
+                <p class="card-text">${content}</p>
+                </div> —>
+        </div>
+    </body>
 </html>

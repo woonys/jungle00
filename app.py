@@ -13,9 +13,10 @@ app.secret_key = 'any random string'
 @app.route('/logged_in')
 def logged_in():
     if "user_id" in session:
-        id = session["user_id"]
-        print(id)
-        return render_template('main.html', id=id)
+        userid = session["user_id"]
+        username = session["user_name"]
+        print(id, username)
+        return render_template('main.html.bak', userid=userid, username=username)
     else:
         return redirect(url_for("login"))
 
@@ -108,10 +109,12 @@ def login():
         if info_check is not None:
             print("회원체크 완료")
             id_val = info_check['user_id']  # DB ID 값
+            name_val = info_check['user_name']
               # DB PWD 값
             passwordcheck = info_check['pwd']
             if bcrypt.checkpw(pwd_receive.encode('utf-8'), passwordcheck):  # DB PWD/입력값 비교
                 session['user_id'] = id_val  # 이름과 user_id로 세션
+                session['user_name'] = name_val
 
                 return redirect(url_for('logged_in'))
 
@@ -143,7 +146,7 @@ def logout():
 
 @app.route('/main')
 def main():
-    return render_template('main.html')
+    return render_template('main.html.bak')
 
 
 
@@ -152,19 +155,21 @@ def main():
 @app.route('/memos', methods=['POST'])
 def create_card():
     user_id = session['user_id']
+    user_name = session['user_name']
     week_receive = request.form['week_give']
     title_receive = request.form['title_give']
     content_receive = request.form['content_give']
     print(user_id, week_receive, title_receive, content_receive)
 
-    doc = {'user_id': user_id, 'title': title_receive, 'content': content_receive, 'week': week_receive}
+    doc = {'user_id': user_id, 'user_name': user_name, 'title': title_receive, 'content': content_receive, 'week': week_receive}
 
     db.member_writing.insert_one(doc)
 
     return jsonify({'result': 'success', 'msg': '오늘 하루도 수고많으셨어요!'})
 
 
-@app.route('/my_memos', methods=['GET'])
+#클라이언트 사이드
+@app.route('/memos', methods=['GET'])
 def list_my_cards():
     week_receive = request.form['week_give']
     all_mywrts = list(db.member_writing.find({'user_id': session['user_id'], 'week': week_receive}))
@@ -178,7 +183,7 @@ def list_others_cards():
     week_receive = request.form['week_give']
     all_othwrt = list(db.member_writing.find({'week': week_receive}))
     for write in all_othwrt:
-        if write['phone'] == session['phone']:
+        if write['user_id'] == session['user_id']:
             all_othwrt.remove(write)
     return jsonify({'result': 'success', 'all_writing': all_othwrt})
 
