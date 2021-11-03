@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/login.css">
+    <link href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"/>  
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+
+
+    <title>회원가입 페이지</title>
+    <style>
+        .mytitle {
+            color: white;
+            width: 300px;
+            height: 200px;
+            background-image: url('https://www.ancient-origins.net/sites/default/files/field/image/Agesilaus-II-cover.jpg');
+            background-position: center;
+            background-size: cover;
+
+            border-radius: 10px;
+            text-align: center;
+            padding-top: 40px;
+        }
+
+        .wrap {
+            margin: 10px auto;
+            width: 300px;
+        }
+    </style>
+
+    <script>
+        function click_register() {
+            // 가입하기 버튼 클릭시 입력창에 있는 정보를 백엔드로 보내준다.
+            let user_id = $('#user_id').val();
+            let user_pwd = $('#user_pwd').val();
+            let user_repwd = $('#user_repwd').val();
+            let user_name = $('#user_name').val();
+            let user_email = $('#user_email').val();
+            
+            $.ajax({
+                    type: "POST", // POST 방식으로 요청하겠다.
+                    url: "/register", // /api/login_info라는 url에 요청하겠다.
+                    data: {id_give: user_id, pwd_give: user_pwd, repwd_give: user_repwd, name_give: user_name , email_give: user_email}, // 데이터를 주는 방법
+                    success: function(response){ // 성공하면
+                    if (response["result"] == "success") {
+                        alert(response["msg"]);
+                    } else if (response["result"] == "input_fail") {
+                        alert(response["msg"])
+                    } else {
+                        alert(response["msg"])
+                    }
+                    }
+            })
+        }
+
+        function check_id() {
+            let email = $('#user_email').val();
+            if (email == '') {
+                alert('이메일을 입력하세요!');
+            } else {
+                if (email.includes('@')) {
+                    // 3. info.spartacoding@gmail.com -> gmail 만 추출해서
+                    // 4. alert(도메인 값);으로 띄우기
+                    // let domainWithDot = email.split('@')[1];
+                    // let onlyDomain = domainWithDot.split('.')[0];
+                    // alert(onlyDomain);
+                } else {
+                    // 5. 만약 이메일이 아니면 '이메일이 아닙니다.' 라는 얼럿 띄우기
+                    alert('이메일이 아닙니다.');
+                    $('#user_email').val("");
+                }
+            }}
+
+        function check_pwd() {
+            let pwd = $('#user_pwd').val();
+            let repwd = $('#user_repwd').val();
+            if (pwd != repwd) {
+                alert('비밀번호가 다릅니다.');
+                $('#user_repwd').val("");
+            }
+        }
+    </script>
+</head>
+<body >
+    <section class="hero is-warning">
+        <div class="hero-body">
+                <h1 class="title" style="text-align: center;">
+                    회원 가입😆
+                </h1>
+        </div>
+    </section>
+  <div class="login-form">
+    <div>
+      <input id= "user_id" type="text" name="id" class="text-field" placeholder="아이디">
+      <input id= "user_pwd" type="password" name="password" class="text-field" placeholder="비밀번호">
+      <input id= "user_repwd" type="password" name="re_password" class="text-field" ㅇ placeholder="비밀번호 재입력">
+      <input id= "user_name" type="text" name="name" class="text-field" placeholder="성함">
+      <input id= "user_email" type="text" name="email" class="text-field" onchange= "check_id()" placeholder="이메일">
+      <button type="submit" class="submit-btn" onclick="click_register(); location.href='/login';">가입하기</button>
+    </div>
+</body>
+</html>

@@ -15,9 +15,11 @@ app.secret_key = 'any random string'
 def logged_in():
     if "user_id" in session:
         id = session["user_id"]
+
         return render_template('main.html', id=id)
     else:
         return redirect(url_for("login"))
+
 
 
 @app.route("/phone", methods=['post'])
@@ -44,6 +46,7 @@ def sign_up():
     message = ''
     if "user_id" in session:
         return redirect(url_for("logged_in"))
+
 
     if request.method == 'GET':
         return render_template("join.html")
@@ -108,6 +111,7 @@ def login():
             passwordcheck = info_check['pwd']
             if bcrypt.checkpw(pwd_receive.encode('utf-8'), passwordcheck):  # DB PWD/입력값 비교
                 session['user_id'] = id_val  # 이름과 user_id로 세션
+
                 return redirect(url_for('logged_in'))
 
             else:
@@ -131,7 +135,6 @@ def logout():
     # else:
     #     return render_template('index.html')
 
-
 ####################
 # 여기서부터 재운
 # 2. main page
@@ -139,6 +142,7 @@ def logout():
 @app.route('/main')
 def main():
     return render_template('main.html')
+
 
 
 # 세션에서 이름, 전화번호(식별자)를 넘겨받기
@@ -176,15 +180,18 @@ def list_others_cards():
     return jsonify({'result': 'success', 'all_writing': all_othwrt})
 
 
+
 @app.route('/memos', methods=['PATCH'])  # vs PUT
 def update_card():
     id_receive = ObjectId(request.form['id_give'])  # string
     title_receive = request.form['title_give']
     content_receive = request.form['contents_give']
     week_receive = request.form['week_give']
-    db.exam.update_one({'_id': id_receive},
+    db.member_writing.update_one({'_id': id_receive},
                        {'$set': {'title': title_receive, 'content': content_receive, 'week': week_receive}})
     return jsonify({'result': 'success', 'msg': '수정 완료'})
+
+
 
 
 @app.route('/memos/{id:str}', methods=['DELETE'])
@@ -194,5 +201,6 @@ def delete_card():
     return jsonify({'result': 'success', 'msg': '제거되었습니다!'})
 
 
+    
 if __name__ == '__main__':
     app.run()
