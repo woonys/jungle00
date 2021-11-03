@@ -53,13 +53,12 @@
             }
             else
             {
-                console.log(234)
                 //week와 title과 content를 서버에 넘긴다.(이름은?????)
                 $.ajax
                 ({
                     type: "POST",
                     url: "/memos",//url 확인
-                    data: {week:week, title:title, content:content},//이름 확인
+                    data: {week_give:week, title_give:title, content_give:content},//이름 확인
                     success: function(response)
                     {
                         if (response["result"] == "success")

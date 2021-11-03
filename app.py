@@ -14,7 +14,7 @@ app.secret_key = 'any random string'
 def logged_in():
     if "user_id" in session:
         id = session["user_id"]
-
+        print(id)
         return render_template('main.html', id=id)
     else:
         return redirect(url_for("login"))
@@ -145,15 +145,15 @@ def main():
 
 
 # 세션에서 이름, 전화번호(식별자)를 넘겨받기
+#저장 완료!
 @app.route('/memos', methods=['POST'])
 def create_card():
-    name = session['name']
-    phone = session['phone']
+    user_id = session['user_id']
     week_receive = request.form['week_give']
     title_receive = request.form['title_give']
     content_receive = request.form['content_give']
 
-    doc = {'name': name, 'phone': phone, 'title': title_receive, 'content': content_receive, 'week': week_receive}
+    doc = {'user_id': user_id, 'title': title_receive, 'content': content_receive, 'week': week_receive}
 
     db.member_writing.insert_one(doc)
 
