@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SW사관학교 정글 | 00주차</title>
+    <style>
+        .box{
+            margin: 0px;
+            border: 10px solid;
+            padding: 10px;
+            width: 300;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .form-group{
+            padding: 5px;
+        }
+        .form-group-submit{
+            text-align: right;
+        }
+        .pwd{
+            display: none;
+        }
+        .input_id{
+            display: none;
+        }
+        .id_conf{
+            display: none;
+        }
+    </style>
+    <script>
+        function check_phone_number()
+        {
+            let phone = $('#phone').val();
+            console.log(phone);
+            //양식확인 통과 -> 서버로 전송 -> 디비에 찾기 요청 -> 디비에서 찾거나 못찾음에 대한 값 반환 -> 찾았으면 정글입니다, 못찾았으면 정글이 아닙니니다.
+            //양식확인 통과못함 -> 전화번호가 아닙니다.
+            // var patternPhone = /^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$/;
+            //입력된 값이 휴대전화번호라면 서버에 해당 번호를 전송한다.
+            //전화번호를 서버에 post 방식으로 요청
+            //서버에서 return 결과를 있으면 success 없으면 fail로 줄꺼임
+            $.ajax
+            ({
+                type: "POST",
+                url: "/login",
+                data: {phone:phone},
+                success: function(response)
+                {
+                    if (response["result"] == "success")
+                    {
+                        $('#3_in_jungle').show();
+                    }
+                    else
+                    {
+                        $('#not_jungle').show();
+                    }
+                }
+                // ,
+                // error: function(response)
+                // {  
+                    
+                // }
+            })
+        
+        // else
+        // {   //입력된 값이 휴대전화 번호가 아니라면
+        //     $("#not_phone").show();
+        // }
+        }
+
+        function check_id()
+        {
+            let id = $('#available_id').val();
+            //양식이 확인 되면 -> 서버 전송 -> 서버에서 발견 됨(이미 등록된 아이디 입니다.) 서버에서 발견되지 않음(조건 통과)
+            console.log(id);
+            //아이디 정규식 이해제대로 안됐으니까 일단 건너뛴다.
+            //아이디를 서버에 post 방식으로 요청
+            $.ajax
+            ({
+                type: "POST",
+                url: "/login",
+                data: {id:id},
+                success: function(response)
+                {
+                    if (response["result"] == "success")
+                    {
+                        $('#available_id').show();
+                    }
+                    else
+                    {
+                        $('#deny_id').show();
+                    }
+                }
+                
+            })
+            
+        }
+        function join()
+        {
+            //모든 조건 재검사 만약 모드 조건을 통과하였다면 서버에 정보 전송 전체 조건을 재검사 하기 위해 여기서 함수를 부르면 될까?
+            
+            let phone = $('#phone').val();
+            let id = $('#available_id').val();
+            let pwd1 = $('#pwd_join').val();
+            let pwd2 = $('#pwd_join_conf').val();
+            $.ajax
+            ({
+                type: "POST",
+                url: "/login",
+                data: {phone : phone, id : id, pwd1 : pwd1, pwd2 : pwd2},
+                success: function(response)
+                {
+                    if (response["result"] == "success")
+                    {
+                        alert("회원가입 성공");
+                    }
+                    else
+                    {
+                        alert("회원가입 실패");
+                    }
+                }
+                
+            })
+            
+        }
+        
+    
+    </script>
+    </head>
+    <body>
+        <div class="box">
+            <h1>회원가입 페이지입니다.</h1>
+            <div class="form-group">
+                <label for="phone">정글인증</label>
+                <input type="email" class="form-control" id="phone" aria-describedby="emailHelp" placeholder="000-0000-0000">
+                <div class="input_id" id="3_in_jungle">정글 3기 입니다.</div>
+                <div class="input_id" id="not_jungle">정글이 아닙니다.</div>
+                <div class="input_id" id="not_phne">양식을 확인하세요.</div>
+                <div class="form-group form-group-submit">
+                    <button type="submit" class="btn btn-primary" onclick="check_phone_number()">인증 확인</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id">아이디</label>
+                <input type="email" class="form-control" id="id" aria-describedby="emailHelp">
+                <div class = "id_conf" id="deny_id">중복된 아이디입니다.</div>
+                <div class = "id_conf" id="available_id">가능한 아이디입니다.</div>
+                <div class="form-group form-group-submit">
+                    <button type="submit" class="btn btn-primary" onclick="check_id()">중복 확인</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="pwd_join">비밀번호</label>
+                <input type="password" class="form-control" id="pwd_join" aria-describedby="emailHelp" placeholder="">
+                
+            </div>
+            <div class="form-group">
+                <label for="pwd_join_cof">비밀번호 확인</label>
+                <input type="password" class="form-control" id="pwd_join_conf" aria-describedby="emailHelp" placeholder="" >
+                <div class="pwd" id="mat_pwd">비밀번호가 같습니다.</div>
+                <div class="pwd" id="wrong_pwd" >비밀번호가 다릅니다.</div>
+                <script>
+                    $('#pwd_join_conf').focusout(function ()
+                    {
+                        var pwd1 = $("#pwd_join").val();
+                        var pwd2 = $("#pwd_join_conf").val();
+                        // console.log(pwd1);
+                        // console.log(pwd2);
+                        if ( pwd1 != '' && pwd2 == '' ) {
+                            null;
+                        } else if (pwd1 != "" || pwd2 != "") {
+                            if (pwd1 == pwd2) {
+                                $("#mat_pwd").css('display', 'inline-block');
+                                $("#wrong_pwd").css('display', 'none');
+                                // console.log(123)
+                            } else {
+                                $("#wrong_pwd").css('display', 'inline-block');
+                                $("#mat_pwd").css('display', 'none');
+                                // console.log(456)
+                            }
+                        }
+                    });
+                </script>
+            </div>
+            <div class="form-group form-group-submit">
+            <button type="submit" class="btn btn-primary" onclick="join()">회원가입</button>
+            </div>
+        </div>
+    </body>
+</html>
