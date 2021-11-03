@@ -14,8 +14,9 @@ app.secret_key = 'any random string'
 def logged_in():
     if "user_id" in session:
         id = session["user_id"]
-        print(id)
-        return render_template('main.html', id=id)
+        username = session["user_name"]
+        print(id, username)
+        return render_template('main.html', id=id, username=username)
     else:
         return redirect(url_for("login"))
 
@@ -106,10 +107,12 @@ def login():
         if info_check is not None:
             print("회원체크 완료")
             id_val = info_check['user_id']  # DB ID 값
+            name_val = info_check['user_name']
               # DB PWD 값
             passwordcheck = info_check['pwd']
             if bcrypt.checkpw(pwd_receive.encode('utf-8'), passwordcheck):  # DB PWD/입력값 비교
                 session['user_id'] = id_val  # 이름과 user_id로 세션
+                session['user_name'] = name_val
 
                 return redirect(url_for('logged_in'))
 
@@ -161,6 +164,7 @@ def create_card():
     return jsonify({'result': 'success', 'msg': '오늘 하루도 수고많으셨어요!'})
 
 
+#클라이언트 사이드
 @app.route('/memos', methods=['GET'])
 def list_my_cards():
     week_receive = request.form['week_give']
