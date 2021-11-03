@@ -27,46 +27,68 @@
         .form-group-submit{
             text-align: right;
         }
+        .log-info{
+            display: none;
+        }
     </style>
     <script>
         function log_in()
         {
             let id = $('#input-q1').val();
             let pwd = $('#input-q2').val();
-            // 공백체크
-            function checkSpace(id,pwd)
-            {
-                if(id.search(/\s/) != -1 || pwd.search(/\s/) != -1) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            // 특수문자 체크
-            function checkSpecial(id,pwd)
-            {
-                var special_pattern = /[\{\}\[\]\/?.,;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/gi;
-                if (special_pattern/test(id) == true && special_pattern.test(pwd) == true) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+            console.log(id);
+            console.log(pwd);
+            // // 공백체크
+            // function checkSpace(id,pwd)
+            // {
+            //     if(id.match(/\s/) || pwd.match(/\s/))
+            //     {
+            //         console.log('공백발견')
+            //         alert("공백발견")
+            //         //input-q1,q2초기화
+            //     }
+            // // 특수문자 체크
+            // function checkSpecial(id,pwd)
+            // {
+            //     var special_pattern = /[\{\}\[\]\/?.,;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/gi;
+            //     if (id.match(special_pattern) || pwd.match(special_pattern))
+            //     {
+            //         alert("특수문자 발견");
+            //         //input-q1,q2초기화
+            //     }
+            // }
             // 비밀번호 패턴 체크(최소 글자수만 제한 최대는 input 미리 거름)
-            function checkPasswordPattern(id,pwd)
+            if (id.length < 4)
             {
-                if (4 <= id.length)
-                {
-                    //id는 4자리 이상 8자리 이하여야 합니다.
-                }
-                if (8 <= pwd.length)
-                {
-                    //pwd는 8자리 이상 16자리 이하여야 합니다.
-                }
-                else
-                {
-                    // 둘다 만족하므로 서버로 넘김 -> DB 조회 일치 한다면 서버는 나에게 success와 해당 아이디의 이름 보내줌 -> success 일 경우 받은이름 님 안녕하세요 fail 일 경우 아이디와 비밀번호가 일치하지 않습니다.
-                }
+                //id는 4자리 이상 8자리 이하여야 합니다.
+                alert("ID는 4자리 이상 8자리 이하여야 합니다.")
+            }
+            if (pwd.length < 8)
+            {
+                //pwd는 8자리 이상 16자리 이하여야 합니다.
+                alert("비밀번호는 8자리 이상 16자리 이하여야 합니다.")
+            }
+            else
+            {
+                // 둘다 만족하므로 서버로 넘김 -> DB 조회 일치 한다면 서버는 나에게 success와 해당 아이디의 이름 보내줌 -> success 일 경우 받은이름 님 안녕하세요 fail 일 경우 아이디와 비밀번호가 일치하지 않습니다.
+                $.ajax
+                ({
+                    type: "POST",
+                    url: "/login",
+                    data: {id:id, pwd:pwd},
+                    success: function(response)
+                    { 
+                        if (response["result"] == "success")// 서버에서 준 결과를 이용해서 나머지 코드를 작성 이부분 다시 보기 문법 틀린듯?
+                        {
+                            alert("로그인에 성공하셨습니다."); // 이때 이름을 어떻게 넣는가? 딕셔너리 키값?
+                        }
+                        else
+                        {
+                            alert("로그인에 실패하셨습니다.")
+                        }
+                            // 서버에서 준 결과를 이용해서 나머지 코드를 작성 이부분이 alert처리 하는게 맞을까?
+                    }
+                })
             }
         }
     </script>
@@ -77,10 +99,12 @@
             <div class="form-group">
               <label for="input-q1">ID</label>
               <input type="text" class="form-control" id="input-q1" aria-describedby="emailHelp" maxlength="8">
+              <div class="log-info" id="log_in_id">양식을 확인해주세요.</div>
             </div>
             <div class="form-group">
               <label for="input-q2">PW</label>
               <input type="password" class="form-control" id="input-q2" maxlength="16">
+              <div class="log-info" id="log_in_pwd">양식을 확인해주세요.</div>
             </div>
             <div class="form-group form-group-submit">
             <button type="submit" class="btn btn-primary" onclick="log_in()">log in</button>

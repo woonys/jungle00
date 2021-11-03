@@ -22,20 +22,37 @@
         }
     </style>
     <script>
+        $(document).ready(function()
+        {
+            $.ajax
+            ({
+                type: "GET",
+                url: "/memos",//잘 모르겠음
+                data:{},
+                success: function (response)
+                {
+                    if(response['result'] == 'success') //성공했으면 이름 주세요
+                    {
+                        // 받은 이름을 어떻게 주냐;;;
+                    }
+                }
+            })
+        });
         function save()
         {
-            // let week = 주차 어떻게 선택하지??
+            // let week = a 태그 내에 텍스트를 가져온다음 첫번째 글자를 취하면 되지 않을까?
             let title = $('#title').val();
             let content = $('#content').val();
             if (title == "" || title == "제목을 입력해주세요" || content== "" || content== "내용을 입력해주세요") //조건에 주차 관련 내용 들어가야 한다
             {
                 console.log(123)
-                //제목 또는 컨텐츠를 입력해 주세요.
+                //제목 또는 컨텐츠가 비어있다 제목 또는 컨텐츠를 입력해 주세요.
             }
             else
             {
                 console.log(234)
                 //title과 content를 서버에 넘긴다.
+                
             }
         }
     </script>

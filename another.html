@@ -28,51 +28,42 @@
         
     </style>
     <script>
-        $(document).ready(function(){
-	        alert('페이지가 로딩되었습니다.')
-            }); 
-        let temp_html = `<div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">${name}님은 ${title}을(를) 공부하셨어요</h5>
-                    <p class="card-text">${content}</p>
-                </div>
-            </div>`;
-            $('#cards-box').append(temp_html);
+        $(document).ready(function()
+        {
+            console.log('페이지가 로딩되었습니다.')
+        }); 
+        // let temp_html = `<div class="card">
+        //         <div class="card-body">
+        //             <h5 class="card-title">${name}님은 ${title}을(를) 공부하셨어요</h5>
+        //             <p class="card-text">${content}</p>
+        //         </div>
+        //     </div>`;
+        //     $('#cards-box').append(temp_html);
     </script>
     </head>
     <body>
         <div class="size">
             <div class="dropdown">
                 <div><h1>다른 분들은 이런걸 공부 했어요!</h1></div>
-                <sapn>주차 </sapn>
+                <span>주차 </span>
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
                   주차를 선택하세요
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item" href="#">1 주차</a>
-                  <a class="dropdown-item" href="#">2 주차</a>
-                  <a class="dropdown-item" href="#">3 주차</a>
-                  <a class="dropdown-item" href="#">4 주차</a>
-                  <a class="dropdown-item" href="#">5 주차</a>
-                  <a class="dropdown-item" href="#">6 주차</a>
-                  <a class="dropdown-item" href="#">7 주차</a>
-                  <a class="dropdown-item" href="#">8 주차</a>
-                  <a class="dropdown-item" href="#">9 주차</a>
-                  <a class="dropdown-item" href="#">10 주차</a>
-                  <a class="dropdown-item" href="#">11 주차</a>
-                  <a class="dropdown-item" href="#">12 주차</a>
-                  <a class="dropdown-item" href="#">13 주차</a>
-                  <a class="dropdown-item" href="#">14 주차</a>
+                    {% for i in range(1,15) %}
+                        <a class="dropdown-item" href="#">i 주차</a>
+                    {% endfor %}
                 </div>
             </div>
         </div>
         <div class="card-columns" id="cards-box">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">${name}님은 ${title}을(를) 공부하셨어요</h5>
-                    <p class="card-text">{$content}</p>
+            {% for ml in my List %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{name}}}님은 {{title}}을(를) 공부하셨어요</h5>
+                        <p class="card-text">{{content}}</p>
+                    </div>
                 </div>
-            </div>
         </div>
 
     </body>
