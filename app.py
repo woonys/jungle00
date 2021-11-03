@@ -16,7 +16,7 @@ def logged_in():
         userid = session["user_id"]
         username = session["user_name"]
         print(id, username)
-        return render_template('main.html', userid=userid, username=username)
+        return render_template('main.html.bak', userid=userid, username=username)
     else:
         return redirect(url_for("login"))
 
@@ -144,7 +144,7 @@ def logout():
 
 @app.route('/main')
 def main():
-    return render_template('main.html')
+    return render_template('main.html.bak')
 
 
 
