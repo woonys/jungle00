@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SW사관학교 정글 | 00주차 | 메인 페이지</title>
+    <style>
+        /* 페이지 시작과 동시에 서버로부터 해당 아이디의 이름을 받아오고 000님에 이름에 넣어줌(대체코드 사용) */
+        .size{
+            width:900px;
+            margin: 30px auto 0 auto;
+            padding: 20px;
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.6);
+        }
+        .form-group-submit{
+            text-align: right;
+        }
+    </style>
+    <script>
+        $(document).ready(function()
+        {
+            $.ajax
+            ({
+                type: "GET",
+                url: "/memos",//잘 모르겠음
+                data:{},
+                success: function (response)
+                {
+                    if(response['result'] == 'success') //성공했으면 이름 주세요
+                    {
+                        // 받은 이름을 어떻게 주냐;;;
+                    }
+                }
+            })
+        });
+        function save()
+        {
+            // let week = a 태그 내에 텍스트를 가져온다음 첫번째 글자를 취하면 되지 않을까?
+            let title = $('#title').val();
+            let content = $('#content').val();
+            if (title == "" || title == "제목을 입력해주세요" || content== "" || content== "내용을 입력해주세요") //조건에 주차 관련 내용 들어가야 한다
+            {
+                console.log(123)
+                //제목 또는 컨텐츠가 비어있다 제목 또는 컨텐츠를 입력해 주세요.
+            }
+            else
+            {
+                console.log(234)
+                //title과 content를 서버에 넘긴다.
+                
+            }
+        }
+    </script>
+    </head>
+    <body>
+        <div class="jumbotron">
+            <h1 class="display-4">000님! 오늘은 무엇을 공부하셨나요?</h1>
+        </div>
+        <div class="size">
+            <div class="dropdown">
+                <span>주차 </span>
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                  주차를 선택하세요
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item" href="#">1 주차</a>
+                  <a class="dropdown-item" href="#">2 주차</a>
+                  <a class="dropdown-item" href="#">3 주차</a>
+                  <a class="dropdown-item" href="#">4 주차</a>
+                  <a class="dropdown-item" href="#">5 주차</a>
+                  <a class="dropdown-item" href="#">6 주차</a>
+                  <a class="dropdown-item" href="#">7 주차</a>
+                  <a class="dropdown-item" href="#">8 주차</a>
+                  <a class="dropdown-item" href="#">9 주차</a>
+                  <a class="dropdown-item" href="#">10 주차</a>
+                  <a class="dropdown-item" href="#">11 주차</a>
+                  <a class="dropdown-item" href="#">12 주차</a>
+                  <a class="dropdown-item" href="#">13 주차</a>
+                  <a class="dropdown-item" href="#">14 주차</a>
+                </div>
+            </div>
+            
+                <div class="form-group">
+                    <span>제목 </span><input placeholder="제목을 입력해주세요" id="title">
+                </div>
+                <div class="form-group">
+                    <div>내용</div><textarea cols="100" rows="20" placeholder="내용을 입력해주세요" id="content"></textarea>
+                </div>
+            <div class="form-group-submit">
+                <button type="button" class="btn btn-primary" onclick="save()">저장하기</button>
+            </div>
+        </div>
+        
+        <div>
+            <button type="button" class="btn btn-outline-danger">내글보기</button>
+            <button type="button" class="btn btn-outline-info">Info</button>
+        </div>
+           
+        
+    </body>
+</html>
