@@ -20,11 +20,13 @@ def logged_in():
         return redirect(url_for("login"))
 
 
-
 @app.route("/phone", methods=['post'])
 def check_phone_num():
+    print("/phone 실행")
     phone = request.form.get("phone")
+    print(phone)
     user_found = db.jungledb.find_one({"phone": phone})
+    print(user_found)
     if user_found is not None:
         return jsonify({"result": "success"})
     else:
@@ -153,6 +155,7 @@ def create_card():
     week_receive = request.form['week_give']
     title_receive = request.form['title_give']
     content_receive = request.form['content_give']
+    print(user_id, week_receive, title_receive, content_receive)
 
     doc = {'user_id': user_id, 'title': title_receive, 'content': content_receive, 'week': week_receive}
 
@@ -161,7 +164,7 @@ def create_card():
     return jsonify({'result': 'success', 'msg': '오늘 하루도 수고많으셨어요!'})
 
 
-@app.route('/memos', methods=['GET'])
+@app.route('/my_memos', methods=['GET'])
 def list_my_cards():
     week_receive = request.form['week_give']
     all_mywrts = list(db.member_writing.find({'user_id': session['user_id'], 'week': week_receive}))
@@ -170,7 +173,7 @@ def list_my_cards():
     return jsonify({'result': 'success', 'all_writing': all_mywrts})
 
 
-@app.route('/memos', methods=['GET'])
+@app.route('/other_memos', methods=['GET'])
 def list_others_cards():
     week_receive = request.form['week_give']
     all_othwrt = list(db.member_writing.find({'week': week_receive}))

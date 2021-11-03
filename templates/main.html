@@ -70,8 +70,8 @@
                 let week = $("select[name=location]").val();
                 let title = $('#title').val();
                 let content = $('#content').val();
-                console.log(title)
                 console.log(week)
+                console.log(title)
                 console.log(content)
                 if (title == "" || title == "제목을 입력해주세요" || content == "" || content == "내용을 입력해주세요" || week == "null") {
                     alert("주차 선택 및 제목이나 컨텐츠가 비어 있습니다.")
@@ -84,6 +84,7 @@
                         success: function (response) {
                             if (response["result"] == "success") {
                                 alert("저장 성공");
+                                //!!!!!내글 보기 페이지로 가던지 해야할듯!!!!!
                             } else {
                                 alert("저장 실패");
                             }
@@ -102,6 +103,20 @@
             function my_list() {
                 $('#button_action').hide();
                 $("#wrap").show();
+                $.ajax
+                    ({
+                        type: "GET",
+                        url: "/my_memos",
+                        data: {week_give: week},
+                        success: function (response) {
+                            if (response["result"] == "success") {
+                                alert("저장 성공");
+                            } else {
+                                alert("저장 실패");
+                            }
+
+                        }
+                    })
             }
 
             function another() {
@@ -163,11 +178,14 @@
         <button type="button" class="btn btn-primary" onclick="save()">저장하기</button>
     </div>
 </div>
-<!— mylist 버튼을 누르면 서버로 부터 요청받은 정보를 받아 붙여줄 템플릿 —>
+
+
+<!-- mylist 버튼을 누르면 서버로 부터 요청받은 정보를 받아 붙여줄 템플릿 -->
 <div class="row row-cols-1 row-cols-md-2" id="wrap">
     <div class="col mb-4">
         <div class="card">
             <div class="card-body">
+                
                 <h5 class="card-title">{{ name }}님은 {{ title }}에 대해 공부했어요</h5>
                 <p class="card-text">{{ content }}</p>
             </div>

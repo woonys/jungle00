@@ -6,10 +6,10 @@ db = client.dbjungle
 
 def insert_db():
 
-    with open('member_list.json') as f:
+    with open('member_list.json','rt', encoding='UTF8' ) as f:
         file_data = json.load(f)
         print(file_data)
-    db.member_list.insert_many(file_data)
+    db.jungledb.insert_many(file_data)
 
 
     print('완료!')
