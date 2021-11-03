@@ -128,6 +128,7 @@ def login():
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
     if "user_id" in session:
+        print("logout")
         session.pop("user_id", None)
         return redirect(url_for("login"))
         #return jsonify({"result" : "success"})
@@ -163,7 +164,7 @@ def create_card():
 @app.route('/memos', methods=['GET'])
 def list_my_cards():
     week_receive = request.form['week_give']
-    all_mywrts = list(db.member_writing.find({'phone': session['phone'], 'week': week_receive}))
+    all_mywrts = list(db.member_writing.find({'user_id': session['user_id'], 'week': week_receive}))
     for wrt in all_mywrts:
         wrt['id'] = str(wrt.pop('_id'))
     return jsonify({'result': 'success', 'all_writing': all_mywrts})
