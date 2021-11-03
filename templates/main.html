@@ -39,33 +39,42 @@
             })
         });
         function save()
-        {
-            // let week = a 태그 내에 텍스트를 가져온다음 첫번째 글자를 취하면 되지 않을까?
+        {   let week = $("select[name=location]").val();
             let title = $('#title').val();
             let content = $('#content').val();
-            if (title == "" || title == "제목을 입력해주세요" || content== "" || content== "내용을 입력해주세요") //조건에 주차 관련 내용 들어가야 한다
+            console.log(title)
+            console.log(week)
+            console.log(content)
+            if (title == "" || title == "제목을 입력해주세요" || content== "" || content== "내용을 입력해주세요" || week =="null")
             {
                 console.log(123)
                 //제목 또는 컨텐츠가 비어있다 제목 또는 컨텐츠를 입력해 주세요.
+                alert("주차 선택 및 제목이나 컨텐츠가 비어 있습니다.")
             }
             else
             {
                 console.log(234)
-                //title과 content를 서버에 넘긴다.
-                
-            }
-        }
-        function log_out() {
-            $.ajax
-            ({
-                type: "GET",
-                url: "/logout",
-                data:{},
-                success: function (response)
-                {window.location.reload();
-                }
-            })
+                //week와 title과 content를 서버에 넘긴다.(이름은?????)
+                $.ajax
+                ({
+                    type: "POST",
+                    url: "/memos",//url 확인
+                    data: {week:week, title:title, content:content},//이름 확인
+                    success: function(response)
+                    {
+                        if (response["result"] == "success")
+                        {
+                            alert("저장 성공");
+                        }
+                        else
+                        {
+                            alert("저장 실패");
+                        }
 
+                    }
+                })
+
+            }
         }
     </script>
     </head>
@@ -74,30 +83,27 @@
             <h1 class="display-4">000님! 오늘은 무엇을 공부하셨나요?</h1>
         </div>
         <div class="size">
-            <div class="dropdown">
-                <span>주차 </span>
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
-                  주차를 선택하세요
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                     {%  for i in range(13) %}
-                      <a class="dropdown-item" href="#" id="week{{i}}">1 주차</a>
-                      <a class="dropdown-item" href="#">2 주차</a>
-                      <a class="dropdown-item" href="#">3 주차</a>
-                      <a class="dropdown-item" href="#">4 주차</a>
-                      <a class="dropdown-item" href="#">5 주차</a>
-                      <a class="dropdown-item" href="#">6 주차</a>
-                      <a class="dropdown-item" href="#">7 주차</a>
-                      <a class="dropdown-item" href="#">8 주차</a>
-                      <a class="dropdown-item" href="#">9 주차</a>
-                      <a class="dropdown-item" href="#">10 주차</a>
-                      <a class="dropdown-item" href="#">11 주차</a>
-                      <a class="dropdown-item" href="#">12 주차</a>
-                      <a class="dropdown-item" href="#">13 주차</a>
-                      <a class="dropdown-item" href="#">14 주차</a>
-                </div>
+            <div><span>주차를 선택하세요 </span>
+                <select name="location">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                </select>
             </div>
-            
+              <div id="output">
+              </div>
+
                 <div class="form-group">
                     <span>제목 </span><input placeholder="제목을 입력해주세요" id="title">
                 </div>
