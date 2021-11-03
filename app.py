@@ -13,10 +13,10 @@ app.secret_key = 'any random string'
 @app.route('/logged_in')
 def logged_in():
     if "user_id" in session:
-        id = session["user_id"]
+        userid = session["user_id"]
         username = session["user_name"]
         print(id, username)
-        return render_template('main.html', id=id, username=username)
+        return render_template('main.html', userid=userid, username=username)
     else:
         return redirect(url_for("login"))
 
@@ -179,7 +179,7 @@ def list_others_cards():
     week_receive = request.form['week_give']
     all_othwrt = list(db.member_writing.find({'week': week_receive}))
     for write in all_othwrt:
-        if write['phone'] == session['phone']:
+        if write['user_id'] == session['user_id']:
             all_othwrt.remove(write)
     return jsonify({'result': 'success', 'all_writing': all_othwrt})
 
