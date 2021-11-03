@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SW사관학교 정글 | 00주차</title>
+    <style>
+        .box{
+            margin: 0px;
+            border: 10px solid;
+            padding: 10px;
+            width: 350px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .form-group{
+            padding: 5px;
+        }
+        .form-group-submit{
+            text-align: right;
+        }
+        .log-info{
+            display: none;
+        }
+    </style>
+    <script>
+        function log_in()
+        {
+            let id = $('#input-q1').val();
+            let pwd = $('#input-q2').val();
+            console.log(id);
+            console.log(pwd);
+            // // 공백체크
+            // function checkSpace(id,pwd)
+            // {
+            //     if(id.match(/\s/) || pwd.match(/\s/))
+            //     {
+            //         console.log('공백발견')
+            //         alert("공백발견")
+            //         //input-q1,q2초기화
+            //     }
+            // // 특수문자 체크
+            // function checkSpecial(id,pwd)
+            // {
+            //     var special_pattern = /[\{\}\[\]\/?.,;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/gi;
+            //     if (id.match(special_pattern) || pwd.match(special_pattern))
+            //     {
+            //         alert("특수문자 발견");
+            //         //input-q1,q2초기화
+            //     }
+            // }
+            // 비밀번호 패턴 체크(최소 글자수만 제한 최대는 input 미리 거름)
+            if (id.length < 4)
+            {
+                //id는 4자리 이상 8자리 이하여야 합니다.
+                alert("ID는 4자리 이상 8자리 이하여야 합니다.")
+            }
+            if (pwd.length < 8)
+            {
+                //pwd는 8자리 이상 16자리 이하여야 합니다.
+                alert("비밀번호는 8자리 이상 16자리 이하여야 합니다.")
+            }
+            else
+            {
+                // 둘다 만족하므로 서버로 넘김 -> DB 조회 일치 한다면 서버는 나에게 success와 해당 아이디의 이름 보내줌 -> success 일 경우 받은이름 님 안녕하세요 fail 일 경우 아이디와 비밀번호가 일치하지 않습니다.
+                $.ajax
+                ({
+                    type: "POST",
+                    url: "/login",
+                    data: {id:id, pwd:pwd},
+                    success: function(response)
+                    { 
+                        if (response["result"] == "success")// 서버에서 준 결과를 이용해서 나머지 코드를 작성 이부분 다시 보기 문법 틀린듯?
+                        {
+                            alert("로그인에 성공하셨습니다."); // 이때 이름을 어떻게 넣는가? 딕셔너리 키값?
+                        }
+                        else
+                        {
+                            alert("로그인에 실패하셨습니다.")
+                        }
+                            // 서버에서 준 결과를 이용해서 나머지 코드를 작성 이부분이 alert처리 하는게 맞을까?
+                    }
+                })
+            }
+        }
+    </script>
+    </head>
+    <body>
+        <div class="box">
+            <h1>TIL!</h1>
+            <div class="form-group">
+              <label for="input-q1">ID</label>
+              <input type="text" class="form-control" id="input-q1" aria-describedby="emailHelp" maxlength="8">
+              <div class="log-info" id="log_in_id">양식을 확인해주세요.</div>
+            </div>
+            <div class="form-group">
+              <label for="input-q2">PW</label>
+              <input type="password" class="form-control" id="input-q2" maxlength="16">
+              <div class="log-info" id="log_in_pwd">양식을 확인해주세요.</div>
+            </div>
+            <div class="form-group form-group-submit">
+            <button type="submit" class="btn btn-primary" onclick="log_in()">log in</button>
+            </div>
+        </div>
+    </body>
+</html>
