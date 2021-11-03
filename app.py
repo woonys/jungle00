@@ -153,11 +153,12 @@ def main():
 @app.route('/memos', methods=['POST'])
 def create_card():
     user_id = session['user_id']
+    user_name = session['user_name']
     week_receive = request.form['week_give']
     title_receive = request.form['title_give']
     content_receive = request.form['content_give']
 
-    doc = {'user_id': user_id, 'title': title_receive, 'content': content_receive, 'week': week_receive}
+    doc = {'user_id': user_id, 'user_name': user_name, 'title': title_receive, 'content': content_receive, 'week': week_receive}
 
     db.member_writing.insert_one(doc)
 
