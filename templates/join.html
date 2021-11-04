@@ -69,11 +69,11 @@
                 }
                 // ,
                 // error: function(response)
-                // {  
-                    
+                // {
+
                 // }
             })
-        
+
         // else
         // {   //입력된 값이 휴대전화 번호가 아니라면
         //     $("#not_phone").show();
@@ -82,35 +82,49 @@
 
         function check_id()
         {
-            let id = $('#available_id').val();
+            let id = $('#id').val();
             //양식이 확인 되면 -> 서버 전송 -> 서버에서 발견 됨(이미 등록된 아이디 입니다.) 서버에서 발견되지 않음(조건 통과)
             console.log(id);
             //아이디 정규식 이해제대로 안됐으니까 일단 건너뛴다.
             //아이디를 서버에 post 방식으로 요청
-            $.ajax
-            ({
-                type: "POST",
-                url: "/user_id",
-                data: {user_id:id},
-                success: function(response)
-                {
-                    if (response["result"] == "success")
+            if (id.length < 4 || id.length > 10) //id는 4자리 이상 10자리 이하여야 합니다.
+                {alert("ID는 4자리 이상 8자리 이하여야 합니다.") //alert
+                $('#id').val('')}  //$('#available_id') 초기화
+            else{
+                $.ajax
+                ({
+                    type: "POST",
+                    url: "/user_id",
+                    data: {user_id:id},
+                    success: function(response)
                     {
-                        $('#available_id').show();
+                        if (response["result"] == "success")
+                        {
+                            $('#available_id').show();
+                        }
+                        else
+                        {
+                            $('#deny_id').show();
+                        }
                     }
-                    else
-                    {
-                        $('#deny_id').show();
-                    }
-                }
-                
-            })
-            
+
+                })
+
+            }
         }
+
+        function check_pwd(){
+            let pwd = $('#pwd_join').val();
+            if (pwd.length < 8) { //비밀번호 제한 8자리 이상 16자리 이하
+                alert("비밀번호는 8자리 이상 16자리 이하여야 합니다."); //alert
+                $('#pwd_join').val(''); //$('#pwd_join') 입력값 초기화
+            }
+        }
+
         function join()
         {
             //모든 조건 재검사 만약 모드 조건을 통과하였다면 서버에 정보 전송 전체 조건을 재검사 하기 위해 여기서 함수를 부르면 될까?
-            
+
             let phone = $('#phone').val();
             let id = $('#id').val();
             let pwd1 = $('#pwd_join').val();
@@ -123,7 +137,6 @@
                 data: {phone : phone, user_id : id, pwd1 : pwd1, pwd2 : pwd2},
                 success: function(response)
                 {
-                    console.log(response)
                     if (response["result"] == "success")
                     {
                         alert("회원가입 성공");
@@ -131,15 +144,16 @@
                     }
                     else
                     {
-                        alert("회원가입 실패");
+                        alert("회원가입 실패: "+ response["message"]);
+
                     }
                 }
-                
+
             })
-            
+
         }
-        
-    
+
+
     </script>
     </head>
     <body>
@@ -166,8 +180,7 @@
             </div>
             <div class="form-group">
                 <label for="pwd_join">비밀번호</label>
-                <input type="password" class="form-control" id="pwd_join" aria-describedby="emailHelp" placeholder="" maxlength="16">
-                
+                <input type="password" class="form-control" id="pwd_join" aria-describedby="emailHelp" placeholder="" maxlength="16" onchange="check_pwd()">
             </div>
             <div class="form-group">
                 <label for="pwd_join_cof">비밀번호 확인</label>
