@@ -47,7 +47,6 @@ def sign_up():
     if "user_id" in session:
         return redirect(url_for("logged_in"))
 
-
     if request.method == 'GET':
         return render_template("join.html")
 
@@ -60,11 +59,19 @@ def sign_up():
         password2 = request.form.get("pwd2")
 
         user_found = db.jungledb.find_one({"phone": phone})
+        user_check_id = db.jungledb.find_one({"user_id": user_id})
         user_name = user_found['name']
         user_phone = user_found['phone']
          #아이디 중복 체크해서 아니면 에러 메시지 반환하는 코드 짜기
+
+
+
         if user_found is False:
             message = '정글 학생이 아닙니다!'
+            return render_template('join.html', message=message)
+
+        if user_check_id is True:
+            message = "아이디 중복입니다!"
             return render_template('join.html', message=message)
 
         if password1 != password2:
