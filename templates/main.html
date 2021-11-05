@@ -28,19 +28,14 @@
             text-align: right;
         }
 
-        #card_add {
-            display: none;
-        }
-
-        #week_info {
-            display: none;
-        }
-
         .align {
             text-align: right;
         }
     </style>
     <script>
+
+
+
         function log_out() {
             $.ajax ({
                 type: "GET",
@@ -78,12 +73,16 @@
 
         function my_list()
         {
-            $("#wrap").html("");
+            $("#wrap_my_list").html("");
+
             $('#button_action').hide();
             $("#week_info").show();
-            $("#wrap").show();
+            $("#wrap_my_list").show();
+            $("#wrap_another_list").hide();
+            $("#week_info_another").hide();
 
-            let week = $("select[id=query-week]").val();
+
+            let week = $("select[id=query-week]").val(); //week : 주차 선택 값
             console.log(week)
             $.ajax
             ({
@@ -107,13 +106,16 @@
                         {
                             for (let i = 0; i < all_writing.length ;i++)
                             {
+
                                 var _id = all_writing[i]['_id']
                                 var title = all_writing[i]['title'];
                                 var content = all_writing[i]['content'];
+                                var week_from_DB = all_writing[i]['week'];
+
                                 console.log(_id, title, content)
                                 let temp_html = `<div class="size" id="new-${_id}">
                                                     <div class="card-body">
-                                                        <h5 class="card-title">{{ username }}님이 ${title}를 공부했어요</h5>
+                                                        <h5 class="card-title">{{ username }}님이 ${week_from_DB}주차에 ${title}를 공부했어요</h5>
                                                         <p class="card-text">${content}</p>
                                                     </div>
                                                     <div>
@@ -133,8 +135,9 @@
                                                     </div>
                                                     </div>
                                                 </div>`;
-                                $("#wrap").append(temp_html)
+                                $("#wrap_my_list").append(temp_html);
                             }
+
                         }
                     }
                 }
@@ -179,6 +182,7 @@
                     if (response['result'] == 'success') {
                         alert("업데이트 완료");
                         window.location.reload();
+                        my_list();
                     } else {
                         alert('서버 오류');
                     }
@@ -190,9 +194,13 @@
 
         function another()
         {
+            $("#wrap_another_list").html("");
+
             $('#button_action').hide();
-            $("#card_add").show();
-            $("#week_info").show();
+            $("#wrap_my_list").hide();
+            $('#week_info').hide();
+            $("#wrap_another_list").show();
+            $("#week_info_another").show();
             let week = $("select[id=query-week]").val();
             $.ajax({
                 type : "GET",
@@ -204,6 +212,7 @@
                     if (response["result"] == "success")
                     {
                         var all_writing = response["all_writing"];
+
                         console.log(all_writing);
                         console.log(title);
                         console.log(content);
@@ -215,16 +224,18 @@
                         {
                             for (let i = 0; i < all_writing.length ;i++)
                             {
+                                var other_name = all_writing[i]['user_name'];
                                 var _id = all_writing[i]['_id']
                                 var title = all_writing[i]['title'];
                                 var content = all_writing[i]['content'];
+                                var week = all_writing[i]['week'];
                                 let temp_html = `<div class="size" id="${_id}">
                                                     <div class="card-body">
-                                                        <h5 class="card-title">{{ username }}님이 ${title}를 공부했어요</h5>
+                                                        <h5 class="card-title">${other_name}님이 ${week}주차에 ${title}를 공부했어요</h5>
                                                         <p class="card-text">${content}</p>
                                                     </div>
                                                 </div>`;
-                                $("#wrap").append(temp_html)
+                                $("#wrap_another_list").append(temp_html)
                             }
                         }
                     }
@@ -235,7 +246,10 @@
         function new_memo()
         {
             $('#button_action').show();
-            $("#card_add").hide();
+            $("#week_info").hide();
+            $("#week_info_another").hide();
+            $("#wrap_my_list").hide();
+            $("#wrap_another_list").hide();
         }
 
 
@@ -252,7 +266,7 @@
             <button type="button" class="btn btn-outline-info" onclick="another()">다른 사람 글</button>
             <button type="button" class="btn btn-outline-info" id="log_out_button_align" onclick="log_out()">로그아웃</button>
         </div>
-        <div class="size" id="button_action">
+        <div class="size" id="button_action" style="display: none">
             <div>
                 <span>주차를 선택하세요 (posting)</span>
                 <select id="posting-week">
@@ -288,7 +302,7 @@
             </div>
         </div>
         <div class="size" id="week_info">
-            <span>주차를 선택하세요</span>
+            <span>주차를 선택하세요 </span>
             <select id="query-week" onchange="my_list()">
                 <option value="0" selected>전체</option>
                 <option value="1">1</option>
@@ -309,8 +323,8 @@
         </div>
         <div id="output2">
         </div>
-        <div id="wrap">
-            <div class="size" >
+        <div id="wrap_my_list">
+            <!-- <div class="size" >
                 <div class="card-body">
                     <h5 class="card-title">${name}님이 ${title}를 공부했어요</h5>
                     <p class="card-text">${content}</p>
@@ -319,7 +333,31 @@
                     <button type="button" class="btn btn-outline-danger" onclick="update()">수정</button>
                     <button type="button" class="btn btn-outline-danger" onclick="del()">삭제</button>
                 </div>
-            </div>
+            </div> -->
+        </div>
+        <div class="size" id="week_info_another" style="display: none">
+            <span>주차를 선택하세요</span>
+            <select id="query-week-another" onchange="another()">
+                <option value="0" selected>전체</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+            </select>
+        </div>
+        <div id="output3">
+        </div>
+        <div id="wrap_another_list" style="display: none">
         </div>
     </body>
 </html>

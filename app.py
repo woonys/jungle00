@@ -15,7 +15,7 @@ def logged_in():
     if "user_id" in session:
         userid = session["user_id"]
         username = session["user_name"]
-        print(id, username)
+        # print(userid, username) 작동 완료
         return render_template('main.html', userid=userid, username=username)
     else:
         return redirect(url_for("login"))
@@ -89,28 +89,27 @@ def sign_up():
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
-    message = 'Please login to your account'
-    print(message)
+    #message = 'Please login to your account'
+    #print(message) 완료
     if 'user_id' in session:
         return redirect(url_for("logged_in"))
     # 로그인 페이지 조회
     if request.method == 'GET':
-        print("Get 요청 성공")
         return render_template("login.html")
 
     # 로그인 요청
     if request.method == 'POST':
         # 클라이언트로부터 데이터를 받기
-        print("post 요청 성공")
+        #print("post 요청 성공") 완료
         id_receive = request.form['id_give']
         pwd_receive = request.form['pwd_give']
-        print("id, pwd 받음", id_receive, pwd_receive)
+        # print("id, pwd 받음", id_receive, pwd_receive) 완료
 
         # member_list DB에서 사용자 조회 (db_mem_id, db_mem_pwd 열에서 회원 조회)
         info_check = db.member_list.find_one({'user_id': id_receive})
-        print(info_check)
+        # print(info_check) 완료 => info_check는 딕셔너리 반환
         if info_check is not None:
-            print("회원체크 완료")
+            #print("회원체크 완료") 작동 완료
             id_val = info_check['user_id']  # DB ID 값
             name_val = info_check['user_name']
             # DB PWD 값
@@ -175,7 +174,7 @@ def create_card():
 @app.route('/my_memos', methods=['GET'])
 def list_my_cards():
     week_receive = request.args.get('week_give')
-    print(session['user_id'], week_receive)
+    # print(session['user_id'], week_receive)
     if week_receive == str(0):
         all_mywrts = list(db.member_writing.find({'user_id': session['user_id']}))
     else:
@@ -183,17 +182,25 @@ def list_my_cards():
 
     for wrt in all_mywrts:
         wrt['_id'] = str(wrt.pop('_id'))  # mongoDB 파일 형식을 String
-    print(all_mywrts)
+    #print(all_mywrts)
     return jsonify({'result': 'success', 'all_writing': all_mywrts})
 
 
 @app.route('/other_memos', methods=['GET'])
 def list_others_cards():
-    week_receive = request.form['week_give']
-    all_othwrt = list(db.member_writing.find({'week': week_receive}))
+    week_receive = request.args.get('week_give')
+    print(week_receive)
+    print(session['user_id'])#okay
+    if week_receive == str(0):
+        all_othwrt = list(db.member_writing.find({}))
+    else:
+        all_othwrt = list(db.member_writing.find({'week': week_receive}))
     for write in all_othwrt:
+        write['_id'] = str(write.pop('_id'))
         if write['user_id'] == session['user_id']:
+            print(write)
             all_othwrt.remove(write)
+            print(all_othwrt)
     return jsonify({'result': 'success', 'all_writing': all_othwrt})
 
 
