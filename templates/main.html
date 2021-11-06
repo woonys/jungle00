@@ -28,176 +28,283 @@
             text-align: right;
         }
 
-        #card_add {
-            display: none;
-        }
-        #week_info {
-            display: none;
-        }
-
         .align {
             text-align: right;
         }
-
     </style>
     <script>
-        {#$(document).ready(function () {#}
-        {#    $.ajax#}
-        {#    ({#}
-        {#        type: "GET",#}
-        {#        url: "/memos",//잘 모르겠음#}
-        {#        data: {},#}
-        {#        success: function (response) {#}
-        {#            if (response['result'] == 'success') //성공했으면 이름 주세요#}
-        {#            {#}
-        {#                // 받은 이름을 어떻게 주냐;;;#}
-        {#            }#}
-        {#        }#}
-        {#    })#}
+
+
 
         function log_out() {
-            $.ajax
-            ({
+            $.ajax ({
                 type: "GET",
                 url: "/logout",
                 data: {},
-                success: function (response) {
+                success: function(response) {
                     window.location.reload();
                 }
             })
         };
 
         function save() {
-            let week = $("select[name=location]").val();
+            let week = $("select[id=posting-week]").val();
             let title = $('#title').val();
             let content = $('#content').val();
-            console.log(title)
-            console.log(week)
-            console.log(content)
-            if (title == "" || title == "제목을 입력해주세요" || content == "" || content == "내용을 입력해주세요" || week == "null") {
+            console.log(week, title, content)
+            if (title == "" || content == "" || !week) {
                 alert("주차 선택 및 제목이나 컨텐츠가 비어 있습니다.")
             } else {
-                $.ajax
-                ({
+                $.ajax({
                     type: "POST",
                     url: "/save_memos",
-                    data: {week_give: week, title_give: title, content_give: content},
-                    success: function (response) {
+                    data: { week_give: week, title_give: title, content_give: content},
+                    success: function(response) {
                         if (response["result"] == "success") {
                             alert("저장 성공");
                             window.location.reload();
                         } else {
                             alert("저장 실패");
                         }
-
                     }
                 })
-
             }
         }
-        
 
-            // function all()
-            // {   //왜 기능 안하지
-            //     $("#button_action").hide();
-            //     $("#card_add").show();
-            // }
-            function my_list() {
-                $('#button_action').hide();
-                $("#card_add").show();
-                $("#week_info").show();
-                let week = $("select[name=location]").val();
-                $.ajax({
-                    type : "GET",
-                    url: `/my_memos?week_give=${week}`,//url 정보
-                    data: {},//이름정보
-                    success: function(response)
-                    {   console.log("get 성공!")
-                        if (response["result"] == "success")
+        function my_list()
+        {
+            $("#wrap_my_list").html("");
+
+            $('#button_action').hide();
+            $("#week_info").show();
+            $("#wrap_my_list").show();
+            $("#wrap_another_list").hide();
+            $("#week_info_another").hide();
+
+
+            let week = $("select[id=query-week]").val(); //week : 주차 선택 값
+            console.log(week)
+            $.ajax
+            ({
+                type : "GET",
+                url: `/my_memos?week_give=${week}`,//url 정보
+                data: {},//이름정보
+                success: function(response)
+                {
+                    console.log("get 성공!")
+                    if (response["result"] == "success")
+                    {
+                        var all_writing = response["all_writing"];
+
+                        console.log("통신 성공");
+                        console.log(all_writing, title, content);
+                        if (all_writing.length == 0)  //컨텐츠 0개
                         {
-                            var all_writing = response["all_writing"];
-
-
-                            console.log(all_writing);
-                            console.log(title);
-                            console.log(content);
+                            alert("표지할 글이 없습니다");
+                        }
+                        else
+                        {
                             for (let i = 0; i < all_writing.length ;i++)
                             {
+
+                                var _id = all_writing[i]['_id']
                                 var title = all_writing[i]['title'];
                                 var content = all_writing[i]['content'];
-                                let temp_html = `<div class="card-body">
-                                            <h5 class="card-title">{{ username }}님이 ${title}를 공부했어요</h5>
-                                            <p class="card-text">${content}</p>
-                                            </div>`;
-                                $("#card_add").append(temp_html)
+                                var week_from_DB = all_writing[i]['week'];
 
+                                console.log(_id, title, content)
+                                let temp_html = `<div class="size" id="new-${_id}">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ username }}님이 ${week_from_DB}주차에 ${title}를 공부했어요</h5>
+                                                        <p class="card-text">${content}</p>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-outline-danger" onclick="convert_to_input('${_id}')">수정</button>
+                                                        <button type="button" class="btn btn-outline-danger" onclick="del('${_id}')">삭제</button>
+                                                    </div>
+                                                </div>
+                                                <div class="size" id="update-${_id}" style="display:none">
+                                                    <div class="card-body">
+                                                        <input class="card-title" id="update-title-${_id}" class="form-control" placeholder= "메모 제목을 입력하세요" value="{{ username }}님이 ${title}를 공부했어요">
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <input class="card-text" id="update-content-${_id}" class="form-control" rows="3" placeholder="내용을 입력하세요" value="${content}"></input>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-outline-danger" onclick="update('${_id}')">저장</button>
+                                                    </div>
+                                                    </div>
+                                                </div>`;
+                                $("#wrap_my_list").append(temp_html);
+                            }
+
+                        }
+                    }
+                }
+            })
+        }
+
+        function del(_id) {
+            console.log(_id);
+            $.ajax({
+                type: 'POST',
+                url: '/delete_memos',
+                data: {id_give : _id},
+                success: function (response)
+                {
+                    if (response['result'] == 'success')
+                    {
+                        alert("삭제 완료");
+                    }
+                    else
+                    {
+                        alert('서버 오류');
+                    }
+                }
+            });
+        }
+        function convert_to_input(_id) {
+                $(`#new-${_id}`).hide()
+                $(`#update-${_id}`).show()
+        }
+
+        function update(_id) {
+            let week = $("select[id=query-week]").val();
+            let title = $(`#update-title-${_id}`).val();
+            let contents = $(`#update-content-${_id}`).val();
+            console.log(_id, title, contents)
+            $.ajax({
+                type: 'PATCH',
+                url: '/update_memos',
+                data: {id_give : _id, title_give : title, contents_give : contents, week_give : week},
+
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert("업데이트 완료");
+                        window.location.reload();
+                        my_list();
+                    } else {
+                        alert('서버 오류');
+                    }
+                }
+            })
+            // $('#card-text').show()
+            // $('#card-update').hide()
+        }
+
+        function another()
+        {
+            $("#wrap_another_list").html("");
+
+            $('#button_action').hide();
+            $("#wrap_my_list").hide();
+            $('#week_info').hide();
+            $("#wrap_another_list").show();
+            $("#week_info_another").show();
+            let week = $("select[id=query-week]").val();
+            $.ajax({
+                type : "GET",
+                url: `/other_memos?week_give=${week}`,//url 정보
+                data: {},//이름정보
+                success: function(response)
+                {
+                    console.log("get 성공!")
+                    if (response["result"] == "success")
+                    {
+                        var all_writing = response["all_writing"];
+
+                        console.log(all_writing);
+                        console.log(title);
+                        console.log(content);
+                        if (all_writing.length == 0)
+                        {
+                            alert("표지할 글이 없습니다");
+                        }
+                        else
+                        {
+                            for (let i = 0; i < all_writing.length ;i++)
+                            {
+                                var other_name = all_writing[i]['user_name'];
+                                var _id = all_writing[i]['_id']
+                                var title = all_writing[i]['title'];
+                                var content = all_writing[i]['content'];
+                                var week = all_writing[i]['week'];
+                                let temp_html = `<div class="size" id="${_id}">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">${other_name}님이 ${week}주차에 ${title}를 공부했어요</h5>
+                                                        <p class="card-text">${content}</p>
+                                                    </div>
+                                                </div>`;
+                                $("#wrap_another_list").append(temp_html)
                             }
                         }
                     }
-                })
-            }
+                }
+            })
+        }
 
-            function another() {
-                $('#button_action').hide();
-                $("#card_add").show();
-            }
+        function new_memo()
+        {
+            $('#button_action').show();
+            $("#week_info").hide();
+            $("#week_info_another").hide();
+            $("#wrap_my_list").hide();
+            $("#wrap_another_list").hide();
+        }
 
-            function new_memo() {
-                $('#button_action').show();
-                $("#card_add").hide();
-            }
-
-            // function all_text() {
-            // }
 
     </script>
     </head>
-    <div class="jumbotron">
-        <h1 class="display-4">{{ username }}님! 오늘은 무엇을 공부하셨나요?</h1>
-    </div>
-    <div class="size align">
-        <!-- <button type="button" class="btn btn-outline-danger" onclick="all()">전체 보기</button> -->
-        <button type="button" class="btn btn-outline-danger" onclick="my_list()">내 글 보기</button>
-        <button type="button" class="btn btn-outline-danger" onclick="new_memo()">새 글 쓰기</button>
-        <button type="button" class="btn btn-outline-info" onclick="another()">다른 사람 글</button>
-        <button type="button" class="btn btn-outline-info" id="log_out_button_align" onclick="log_out()">로그아웃</button>
-    </div>
-    <div class="size" id="button_action">
-        <div><span>주차를 선택하세요 </span>
-            <select name="location">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-            </select>
+    <body>
+        <div class="jumbotron">
+            <h1 class="display-4">{{ username }}님! 오늘은 무엇을 공부하셨나요?</h1>
         </div>
-        <div id="output">
+        <div class="size align">
+            <!-- <button type="button" class="btn btn-outline-danger" onclick="all()">전체 보기</button> -->
+            <button type="button" class="btn btn-outline-danger" onclick="my_list()">내 글 보기</button>
+            <button type="button" class="btn btn-outline-danger" onclick="new_memo()">새 글 쓰기</button>
+            <button type="button" class="btn btn-outline-info" onclick="another()">다른 사람 글</button>
+            <button type="button" class="btn btn-outline-info" id="log_out_button_align" onclick="log_out()">로그아웃</button>
         </div>
+        <div class="size" id="button_action" style="display: none">
+            <div>
+                <span>주차를 선택하세요 (posting)</span>
+                <select id="posting-week">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                </select>
+            </div>
+            <div id="output">
+            </div>
 
-        <div class="form-group">
-            <span>제목 </span><input placeholder="제목을 입력해주세요" id="title">
+            <div class="form-group">
+                <span>제목 </span>
+                <input placeholder="제목을 입력해주세요" id="title">
+            </div>
+            <div class="form-group">
+                <div>내용</div>
+                <textarea cols="100" rows="20" placeholder="내용을 입력해주세요" id="content"></textarea>
+            </div>
+            <div class="form-group-submit">
+                <button type="button" class="btn btn-primary" onclick="save()">저장하기</button>
+            </div>
         </div>
-        <div class="form-group">
-            <div>내용</div>
-            <textarea cols="100" rows="20" placeholder="내용을 입력해주세요" id="content"></textarea>
-        </div>
-        <div class="form-group-submit">
-            <button type="button" class="btn btn-primary" onclick="save()">저장하기</button>
-        </div>
-        </div>
-        <div class="size" id="week_info"><span>주차를 선택하세요 </span>
-            <select name="location">
-                <option value="0">전체</option>
+        <div class="size" id="week_info">
+            <span>주차를 선택하세요 </span>
+            <select id="query-week" onchange="my_list()">
+                <option value="0" selected>전체</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -216,13 +323,41 @@
         </div>
         <div id="output2">
         </div>
-
-        <div class="size" id="card_add">
-            표시할 글이 없습니다.
-                <!-- <div class="card-body">
-                <h5 class="card-title">${name}님이 ${content}를 공부했어요</h5>
-                <p class="card-text">${content}</p>
-                </div> -->
+        <div id="wrap_my_list">
+            <!-- <div class="size" >
+                <div class="card-body">
+                    <h5 class="card-title">${name}님이 ${title}를 공부했어요</h5>
+                    <p class="card-text">${content}</p>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-outline-danger" onclick="update()">수정</button>
+                    <button type="button" class="btn btn-outline-danger" onclick="del()">삭제</button>
+                </div>
+            </div> -->
+        </div>
+        <div class="size" id="week_info_another" style="display: none">
+            <span>주차를 선택하세요</span>
+            <select id="query-week-another" onchange="another()">
+                <option value="0" selected>전체</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+            </select>
+        </div>
+        <div id="output3">
+        </div>
+        <div id="wrap_another_list" style="display: none">
         </div>
     </body>
 </html>
