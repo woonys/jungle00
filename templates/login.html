@@ -58,18 +58,7 @@
             //     }
             // }
             // 비밀번호 패턴 체크(최소 글자수만 제한 최대는 input 미리 거름)
-            if (id.length < 4)
-            {
-                //id는 4자리 이상 8자리 이하여야 합니다.
-                alert("ID는 4자리 이상 8자리 이하여야 합니다.")
-            }
-            if (pwd.length < 8)
-            {
-                //pwd는 8자리 이상 16자리 이하여야 합니다.
-                alert("비밀번호는 8자리 이상 16자리 이하여야 합니다.")
-            }
-            else
-            {
+
                 // 둘다 만족하므로 서버로 넘김 -> DB 조회 일치 한다면 서버는 나에게 success와 해당 아이디의 이름 보내줌 -> success 일 경우 받은이름 님 안녕하세요 fail 일 경우 아이디와 비밀번호가 일치하지 않습니다.
                 $.ajax
                 ({
@@ -77,19 +66,14 @@
                     url: "/",
                     data: {id_give:id, pwd_give:pwd},
                     success: function(response)
-                    {   console.log("로그인 성공0");
+                    {   console.log("로그인 성공");
                         window.location.reload();
-                        {#if (response["result"] == "success")// 서버에서 준 결과를 이용해서 나머지 코드를 작성 이부분 다시 보기 문법 틀린듯?#}
-                        {#{#}
-                        {#    console.log("로그인 성공1")#}
-                        {#    window.location.reload();#}
-                        {#    console.log("로그인 성공2")#}
 
                             // 서버에서 준 결과를 이용해서 나머지 코드를 작성 이부분이 alert처리 하는게 맞을까?
                     }
                 })
             }
-        }
+
     </script>
     </head>
     <body>
